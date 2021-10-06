@@ -301,11 +301,12 @@ class NanoDetSimOTAHead(nn.Module):
 
         (
             foreground_mask,
-            labels,
-            label_weights,
-            label_scores,
-            bbox_targets,
+            all_labels,
+            all_label_weights,
+            all_label_scores,
+            all_bbox_targets,
             bbox_weights,
+            all_grid_cell_centers,
             num_pos_per_img,
         ) = multi_apply(
             self.target_assign_single_img,
@@ -315,68 +316,78 @@ class NanoDetSimOTAHead(nn.Module):
             gt_bboxes,
             gt_labels,
         )
+        # merge list of targets tensors into one batch then split to multi levels
+        mlvl_grid_cell_centers = images_to_levels(
+            all_grid_cell_centers, num_level_cells
+        )
+        mlvl_labels = images_to_levels(all_labels, num_level_cells)
+        mlvl_label_weights = images_to_levels(all_label_weights, num_level_cells)
+        mlvl_label_scores = images_to_levels(all_label_scores, num_level_cells)
+        mlvl_bbox_targets = images_to_levels(all_bbox_targets, num_level_cells)
 
         num_total_samples = reduce_mean(
             torch.tensor(sum(num_pos_per_img)).to(device)
         ).item()
         num_total_samples = max(num_total_samples, 1.0)
 
-        foreground_mask = torch.cat(foreground_mask, 0)
-        labels = torch.cat(labels, 0)
-        label_weights = torch.cat(label_weights, 0)
-        label_scores = torch.cat(label_scores, 0)
-        bbox_targets = torch.cat(bbox_targets, 0)
-        bbox_weights = torch.cat(bbox_weights, 0)
-
-        avg_factor = bbox_weights.sum()
-
-        # regression loss
-        loss_bbox = self.loss_bbox(
-            flatten_bboxes.view(-1, 4)[foreground_mask],
-            bbox_targets[foreground_mask],
-            weight=bbox_weights,
-            avg_factor=avg_factor,
+        losses_qfl, losses_bbox, losses_dfl, avg_factor = multi_apply(
+            self.loss_single,
+            mlvl_grid_cell_centers,
+            cls_scores,
+            bbox_preds,
+            mlvl_labels,
+            mlvl_label_weights,
+            mlvl_label_scores,
+            mlvl_bbox_targets,
+            self.strides,
+            num_total_samples=num_total_samples,
         )
 
-        # # dfl loss
-        # loss_dfl = self.loss_dfl(
-        #     pred_corners,
-        #     target_corners,
-        #     weight=weight_targets[:, None].expand(-1, 4).reshape(-1),
-        #     avg_factor=4.0,
-        # )
-        # qfl loss
-        loss_qfl = self.loss_qfl(
-            flatten_cls_preds.view(-1, self.num_classes),
-            (labels, label_scores),
-            weight=label_weights,
-            avg_factor=num_total_samples,
-        )
-        loss = loss_qfl + loss_bbox  # + loss_dfl
-        loss_states = dict(
-            loss_qfl=loss_qfl, loss_bbox=loss_bbox
-        )  # , loss_dfl=loss_dfl)
+        avg_factor = sum(avg_factor)
+        avg_factor = reduce_mean(avg_factor).item()
+        if avg_factor <= 0:
+            loss_qfl = torch.tensor(0, dtype=torch.float32, requires_grad=True).to(
+                device
+            )
+            loss_bbox = torch.tensor(0, dtype=torch.float32, requires_grad=True).to(
+                device
+            )
+            loss_dfl = torch.tensor(0, dtype=torch.float32, requires_grad=True).to(
+                device
+            )
+        else:
+            losses_bbox = list(map(lambda x: x / avg_factor, losses_bbox))
+            losses_dfl = list(map(lambda x: x / avg_factor, losses_dfl))
+
+            loss_qfl = sum(losses_qfl)
+            loss_bbox = sum(losses_bbox)
+            loss_dfl = sum(losses_dfl)
+
+        loss = loss_qfl + loss_bbox + loss_dfl
+        loss_states = dict(loss_qfl=loss_qfl, loss_bbox=loss_bbox, loss_dfl=loss_dfl)
 
         return loss, loss_states
 
     def loss_single(
         self,
-        grid_cells,
+        grid_cell_centers,
         cls_score,
         bbox_pred,
         labels,
         label_weights,
+        label_scores,
         bbox_targets,
         stride,
         num_total_samples,
     ):
 
-        grid_cells = grid_cells.reshape(-1, 4)
+        grid_cell_centers = grid_cell_centers.reshape(-1, 4)[:, :2]
         cls_score = cls_score.permute(0, 2, 3, 1).reshape(-1, self.cls_out_channels)
         bbox_pred = bbox_pred.permute(0, 2, 3, 1).reshape(-1, 4 * (self.reg_max + 1))
         bbox_targets = bbox_targets.reshape(-1, 4)
         labels = labels.reshape(-1)
         label_weights = label_weights.reshape(-1)
+        label_scores = label_scores.reshape(-1)
 
         # FG cat_id: [0, num_classes -1], BG cat_id: num_classes
         bg_class_ind = self.num_classes
@@ -384,13 +395,13 @@ class NanoDetSimOTAHead(nn.Module):
             (labels >= 0) & (labels < bg_class_ind), as_tuple=False
         ).squeeze(1)
 
-        score = label_weights.new_zeros(labels.shape)
+        # score = label_weights.new_zeros(labels.shape)
 
         if len(pos_inds) > 0:
             pos_bbox_targets = bbox_targets[pos_inds]
             pos_bbox_pred = bbox_pred[pos_inds]  # (n, 4 * (reg_max + 1))
-            pos_grid_cells = grid_cells[pos_inds]
-            pos_grid_cell_centers = self.grid_cells_to_center(pos_grid_cells) / stride
+            pos_grid_centers = grid_cell_centers[pos_inds]
+            pos_grid_cell_centers = pos_grid_centers / stride
 
             weight_targets = cls_score.detach().sigmoid()
             weight_targets = weight_targets.max(dim=1)[0][pos_inds]
@@ -399,9 +410,9 @@ class NanoDetSimOTAHead(nn.Module):
                 pos_grid_cell_centers, pos_bbox_pred_corners
             )
             pos_decode_bbox_targets = pos_bbox_targets / stride
-            score[pos_inds] = bbox_overlaps(
-                pos_decode_bbox_pred.detach(), pos_decode_bbox_targets, is_aligned=True
-            )
+            # score[pos_inds] = bbox_overlaps(
+            #     pos_decode_bbox_pred.detach(), pos_decode_bbox_targets, is_aligned=True
+            # )
             pred_corners = pos_bbox_pred.reshape(-1, self.reg_max + 1)
             target_corners = bbox2distance(
                 pos_grid_cell_centers, pos_decode_bbox_targets, self.reg_max
@@ -430,7 +441,7 @@ class NanoDetSimOTAHead(nn.Module):
         # qfl loss
         loss_qfl = self.loss_qfl(
             cls_score,
-            (labels, score),
+            (labels, label_scores),
             weight=label_weights,
             avg_factor=num_total_samples,
         )
@@ -464,6 +475,10 @@ class NanoDetSimOTAHead(nn.Module):
         num_gts = gt_labels.size(0)
         gt_bboxes = gt_bboxes.to(decoded_bboxes.dtype)
         # No target
+        center_priors = torch.cat(
+            [(priors[:, :2] + priors[:, 2:]) * 0.5, priors[:, 2:] - priors[:, :2]],
+            dim=-1,
+        )
         if num_gts == 0:
             cls_target = cls_preds.new_zeros((0, self.num_classes))
             bbox_target = torch.zeros_like(priors)
@@ -479,13 +494,9 @@ class NanoDetSimOTAHead(nn.Module):
                 label_scores,
                 bbox_target,
                 weight_targets,
+                center_priors,
                 0,
             )
-
-        center_priors = torch.cat(
-            [(priors[:, :2] + priors[:, 2:]) * 0.5, priors[:, 2:] - priors[:, :2]],
-            dim=-1,
-        )
 
         assign_result = self.assigner.assign(
             cls_preds.sigmoid(), center_priors, decoded_bboxes, gt_bboxes, gt_labels
@@ -528,6 +539,7 @@ class NanoDetSimOTAHead(nn.Module):
             label_scores,
             bbox_targets,
             weight_targets,
+            center_priors,
             num_pos_per_img,
         )
 

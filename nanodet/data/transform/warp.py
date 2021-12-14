@@ -46,7 +46,11 @@ def get_rotation_matrix(degree=0.0):
     :return:
     """
     R = np.eye(3)
-    a = random.uniform(-degree, degree)
+    #a = random.uniform(-degree, degree)
+    
+    a = random.choice([-90,0,90,180,270])
+    
+    
     R[:2] = cv2.getRotationMatrix2D(angle=a, center=(0, 0), scale=1)
     return R
 

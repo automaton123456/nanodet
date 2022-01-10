@@ -72,11 +72,11 @@ data:
     keep_ratio: False
     pipeline:
       perspective: 0.0
-      scale: [0.6, 1.4]
+      scale: [1.0, 3.0]
       stretch: [[0.8, 1.2], [0.8, 1.2]]
       rotation: 0
       shear: 0
-      translate: 0.2
+      translate: 0.4
       flip: 0.5
       brightness: 0.2
       contrast: [0.6, 1.4]
@@ -94,7 +94,7 @@ data:
 device:
   gpu_ids: [0]
   workers_per_gpu: 10
-  batchsize_per_gpu: 96
+  batchsize_per_gpu: 32
 schedule:
 #  resume:
 #  load_model:

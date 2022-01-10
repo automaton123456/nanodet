@@ -5,7 +5,7 @@
 #           AP_small = 0.143
 #               AP_m = 0.363
 #               AP_l = 0.539
-save_dir: /content/drive/MyDrive/NanoDetsMicro25
+save_dir: /content/drive/MyDrive/NanoDetsMicro26
 model:
   weight_averager:
     name: ExpMovingAverager

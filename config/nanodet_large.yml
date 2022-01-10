@@ -60,9 +60,12 @@ model:
       strides: [8, 16, 32, 64]
       activation: LeakyReLU
       reg_max: 7
+      
+class_names: &class_names ["fullgolfclub","golfball","golfclub","golfer","golfer_front"]  #Please fill in the category names (not include background category)      
 data:
   train:
-    name: CocoDataset
+    name: XMLDataset
+    class_names: *class_names
     img_path: /content/AllDataFull/TrainFlat
     ann_path: /content/AllDataFull/TrainFlat
     input_size: [416,416] #[w,h]
@@ -80,7 +83,8 @@ data:
       saturation: [0.5, 1.2]
       normalize: [[103.53, 116.28, 123.675], [57.375, 57.12, 58.395]]
   val:
-    name: CocoDataset
+    name: XMLDataset
+    class_names: *class_names
     img_path: /content/AllDataFull/TestFlat
     ann_path: /content/AllDataFull/TestFlat
     input_size: [416,416] #[w,h]
@@ -114,5 +118,3 @@ evaluator:
   save_key: mAP
 log:
   interval: 50
-
-class_names: ["fullgolfclub","golfball","golfclub","golfer","golfer_front"]

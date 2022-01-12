@@ -59,6 +59,7 @@ class XMLDataset(CocoDataset):
         super(XMLDataset, self).__init__(**kwargs)
 
     def xml_to_coco(self, ann_path):
+        return
         """
         convert xml annotations to coco_api
         :param ann_path:

@@ -5,7 +5,7 @@
 #           AP_small = 0.083
 #               AP_m = 0.278
 #               AP_l = 0.451
-save_dir: /content/drive/MyDrive/NanoDetsMicro29
+save_dir: /content/drive/MyDrive/NanoDetsNPU
 model:
   weight_averager:
     name: ExpMovingAverager
@@ -59,8 +59,8 @@ model:
     aux_head:
       name: SimpleConvHead
       num_classes: 5
-      input_channel: 192
-      feat_channels: 192
+      input_channel: 256
+      feat_channels: 256
       stacked_convs: 4
       strides: [8, 16, 32, 64]
       activation: LeakyReLU

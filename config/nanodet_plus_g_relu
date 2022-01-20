@@ -5,7 +5,7 @@
 #           AP_small = 0.083
 #               AP_m = 0.278
 #               AP_l = 0.451
-save_dir: /content/drive/MyDrive/NanoDetsNPU
+save_dir: /content/drive/MyDrive/NanoDetsNPURelu
 model:
   weight_averager:
     name: ExpMovingAverager
@@ -22,7 +22,7 @@ model:
                 [ 'CspBlock', 128, 2, 3, 2 ],  # 1/16
                 [ 'CspBlock', 256, 3, 3, 2 ]]  # 1/32
       out_stages: [3,4,5]
-      activation: LeakyReLU
+      activation: ReLU
     fpn:
       name: GhostPAN
       in_channels: [128, 256, 512]
@@ -30,7 +30,7 @@ model:
       kernel_size: 5
       num_extra_level: 1
       use_depthwise: True
-      activation: LeakyReLU
+      activation: ReLU
     head:
       name: NanoDetPlusHead
       num_classes: 5
@@ -39,7 +39,7 @@ model:
       stacked_convs: 2
       kernel_size: 5
       strides: [8, 16, 32, 64]
-      activation: LeakyReLU
+      activation: ReLU
       reg_max: 7
       norm_cfg:
         type: BN
@@ -63,7 +63,7 @@ model:
       feat_channels: 256
       stacked_convs: 4
       strides: [8, 16, 32, 64]
-      activation: LeakyReLU
+      activation: ReLU
       reg_max: 7
       
       

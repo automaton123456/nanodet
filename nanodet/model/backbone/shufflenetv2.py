@@ -27,6 +27,19 @@ def channel_shuffle(x, groups):
 
     return x
 
+def channel_shuffle_edge(x, groups):
+    # type: (torch.Tensor, int) -> torch.Tensor
+    batchsize, num_channels, height, width = x.data.size()
+    channels_per_group = num_channels // groups
+
+    # reshape
+    x = x.view(batchsize, groups, channels_per_group, height * width)
+    x = torch.transpose(x, 1, 2).contiguous()
+
+    # flatten
+    x = x.view(batchsize, -1, height, width)
+    return x
+
 
 class ShuffleV2Block(nn.Module):
     def __init__(self, inp, oup, stride, activation="ReLU"):
@@ -97,6 +110,7 @@ class ShuffleV2Block(nn.Module):
             out = torch.cat((self.branch1(x), self.branch2(x)), dim=1)
 
         #out = channel_shuffle(out, 2)
+        out = channel_shuffle_edge(out, 2)
 
         return out
 

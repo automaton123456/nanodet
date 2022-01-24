@@ -53,7 +53,7 @@ def main(config, model_path, output_path, input_shape=(320, 320)):
         output_path,
         verbose=True,
         keep_initializers_as_inputs=True,
-        opset_version=11,
+        opset_version=10,
         input_names=["data"],
         output_names=["output"],
     )

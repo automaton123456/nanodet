@@ -110,7 +110,7 @@ class ShuffleV2Block(nn.Module):
             out = torch.cat((self.branch1(x), self.branch2(x)), dim=1)
 
         #out = channel_shuffle(out, 2)
-        out = channel_shuffle_edge(out, 2)
+        #out = channel_shuffle_edge(out, 2)
 
         return out
 

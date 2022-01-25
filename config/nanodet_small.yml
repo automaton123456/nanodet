@@ -1,5 +1,5 @@
 #Config File example
-save_dir: /content/drive/MyDrive/NanoDetsMicro27
+save_dir: /content/drive/MyDrive/NanoDetsSmallNoS
 model:
   weight_averager:
     name: ExpMovingAverager

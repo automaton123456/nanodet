@@ -9,6 +9,7 @@ from ..module.activation import act_layers
 
 efficientnet_lite_params = {
     # width_coefficient, depth_coefficient, image_size, dropout_rate
+    "efficientnet_lite_tiny": [1.0, 0.5, 224, 0.2],
     "efficientnet_lite0": [1.0, 1.0, 224, 0.2],
     "efficientnet_lite1": [1.0, 1.1, 240, 0.2],
     "efficientnet_lite2": [1.1, 1.2, 260, 0.3],

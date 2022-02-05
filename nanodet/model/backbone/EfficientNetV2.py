@@ -122,6 +122,9 @@ class EffNetV2(nn.Module):
     def __init__(self, cfgs, num_classes=1000, width_mult=1.):
         super(EffNetV2, self).__init__()
         self.cfgs = cfgs
+        
+        self.out_stages=(2, 4, 6)
+        self.activation="ReLU6"
 
         # building first layer
         input_channel = _make_divisible(24 * width_mult, 8)
@@ -144,10 +147,13 @@ class EffNetV2(nn.Module):
 
     def forward(self, x):
         x = self.features(x)
-        x = self.conv(x)
-        x = self.avgpool(x)
-        x = x.view(x.size(0), -1)
-        x = self.classifier(x)
+        
+        
+        
+        #x = self.conv(x)
+        #x = self.avgpool(x)
+        #x = x.view(x.size(0), -1)
+        #x = self.classifier(x)
         return x
 
     def _initialize_weights(self):

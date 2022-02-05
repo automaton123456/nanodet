@@ -115,7 +115,7 @@ class MBConv(nn.Module):
 
 
 class EffNetV2(nn.Module):
-    def __init__(self, cfg):
+    def __init__(self, model_name, out_stages=(1, 3, 5), activation="ReLU6", pretrain=True):
         width_mult=1
         cfgs = [
                 # t, c, n, s, SE
@@ -127,10 +127,20 @@ class EffNetV2(nn.Module):
                 [6, 256, 15, 2, 1],
         ]
 
+        cfgs = [
+                # t, c, n, s, SE
+                [1,  24,  1, 1, 0],
+                [4,  48,  2, 2, 0],
+                [4,  64,  2, 2, 0],
+                [4, 128,  2, 2, 1],
+                [6, 160,  2, 1, 1],
+                [6, 256, 6, 2, 1],
+        ]
+
         super(EffNetV2, self).__init__()
         self.cfgs = cfgs
         
-        self.out_stages=(1, 3, 5)
+        self.out_stages=out_stages
         self.activation="ReLU6"
 
         # building first layer

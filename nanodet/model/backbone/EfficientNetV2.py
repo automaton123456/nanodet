@@ -1,9 +1,5 @@
 """
-Creates a EfficientNetV2 Model as defined in:
-Mingxing Tan, Quoc V. Le. (2021). 
-EfficientNetV2: Smaller Models and Faster Training
-arXiv preprint arXiv:2104.00298.
-import from https://github.com/d-li14/mobilenetv2.pytorch
+Adapted from https://github.com/d-li14/efficientnetv2.pytorch/blob/main/effnetv2.py
 """
 
 import torch
@@ -49,7 +45,7 @@ class SELayer(nn.Module):
         self.avg_pool = nn.AdaptiveAvgPool2d(1)
         self.fc = nn.Sequential(
                 nn.Linear(oup, _make_divisible(inp // reduction, 8)),
-                SiLU(),
+                nn.ReLU6(),
                 nn.Linear(_make_divisible(inp // reduction, 8), oup),
                 nn.Sigmoid()
         )
@@ -65,7 +61,7 @@ def conv_3x3_bn(inp, oup, stride):
     return nn.Sequential(
         nn.Conv2d(inp, oup, 3, stride, 1, bias=False),
         nn.BatchNorm2d(oup),
-        SiLU()
+        nn.ReLU6()
     )
 
 
@@ -73,7 +69,7 @@ def conv_1x1_bn(inp, oup):
     return nn.Sequential(
         nn.Conv2d(inp, oup, 1, 1, 0, bias=False),
         nn.BatchNorm2d(oup),
-        SiLU()
+        nn.ReLU6()
     )
 
 
@@ -89,11 +85,11 @@ class MBConv(nn.Module):
                 # pw
                 nn.Conv2d(inp, hidden_dim, 1, 1, 0, bias=False),
                 nn.BatchNorm2d(hidden_dim),
-                SiLU(),
+                nn.ReLU6(),
                 # dw
                 nn.Conv2d(hidden_dim, hidden_dim, 3, stride, 1, groups=hidden_dim, bias=False),
                 nn.BatchNorm2d(hidden_dim),
-                SiLU(),
+                nn.ReLU6(),
                 SELayer(inp, hidden_dim),
                 # pw-linear
                 nn.Conv2d(hidden_dim, oup, 1, 1, 0, bias=False),
@@ -104,7 +100,7 @@ class MBConv(nn.Module):
                 # fused
                 nn.Conv2d(inp, hidden_dim, 3, stride, 1, bias=False),
                 nn.BatchNorm2d(hidden_dim),
-                SiLU(),
+                nn.ReLU6(),
                 # pw-linear
                 nn.Conv2d(hidden_dim, oup, 1, 1, 0, bias=False),
                 nn.BatchNorm2d(oup),
@@ -119,42 +115,77 @@ class MBConv(nn.Module):
 
 
 class EffNetV2(nn.Module):
-    def __init__(self, cfgs, num_classes=1000, width_mult=1.):
+    def __init__(self):
+        width_mult=1
+        cfgs = [
+                # t, c, n, s, SE
+                [1,  24,  2, 1, 0],
+                [4,  48,  4, 2, 0],
+                [4,  64,  4, 2, 0],
+                [4, 128,  6, 2, 1],
+                [6, 160,  9, 1, 1],
+                [6, 256, 15, 2, 1],
+        ]
+
         super(EffNetV2, self).__init__()
         self.cfgs = cfgs
         
-        self.out_stages=(2, 4, 6)
+        self.out_stages=(1, 3, 5)
         self.activation="ReLU6"
 
         # building first layer
         input_channel = _make_divisible(24 * width_mult, 8)
         layers = [conv_3x3_bn(3, input_channel, 2)]
+
+        self.stem = nn.Sequential(*layers)
+        self.blocks = nn.ModuleList([])
+
         # building inverted residual blocks
         block = MBConv
+
         for t, c, n, s, use_se in self.cfgs:
+            stage = nn.ModuleList([])
+
             output_channel = _make_divisible(c * width_mult, 8)
             for i in range(n):
-                layers.append(block(input_channel, output_channel, s if i == 0 else 1, t, use_se))
+                stage.append(block(input_channel, output_channel, s if i == 0 else 1, t, use_se))
                 input_channel = output_channel
-        self.features = nn.Sequential(*layers)
+
+            self.blocks.append(stage) 
+
+        
         # building last several layers
-        output_channel = _make_divisible(1792 * width_mult, 8) if width_mult > 1.0 else 1792
-        self.conv = conv_1x1_bn(input_channel, output_channel)
-        self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
-        self.classifier = nn.Linear(output_channel, num_classes)
+        #output_channel = _make_divisible(1792 * width_mult, 8) if width_mult > 1.0 else 1792
+        #self.conv = conv_1x1_bn(input_channel, output_channel)
+        #self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
+        #self.classifier = nn.Linear(output_channel, num_classes)
 
         self._initialize_weights()
 
+    
+
     def forward(self, x):
-        x = self.features(x)
-        
+        output = []
+        x = self.stem(x)
+        counter = 0
+
+        for stage in self.blocks:
+          for block in stage:
+            x = block(x)
+
+          if counter in self.out_stages:
+            output.append(x)  
+
+          counter = counter + 1  
         
         
         #x = self.conv(x)
         #x = self.avgpool(x)
         #x = x.view(x.size(0), -1)
         #x = self.classifier(x)
-        return x
+
+        #print("Oiii" + str(len(output)))
+        return output
 
     def _initialize_weights(self):
         for m in self.modules():
@@ -169,70 +200,7 @@ class EffNetV2(nn.Module):
             elif isinstance(m, nn.Linear):
                 m.weight.data.normal_(0, 0.001)
                 m.bias.data.zero_()
-
-
-def effnetv2_s(**kwargs):
-    """
-    Constructs a EfficientNetV2-S model
-    """
-    cfgs = [
-        # t, c, n, s, SE
-        [1,  24,  2, 1, 0],
-        [4,  48,  4, 2, 0],
-        [4,  64,  4, 2, 0],
-        [4, 128,  6, 2, 1],
-        [6, 160,  9, 1, 1],
-        [6, 256, 15, 2, 1],
-    ]
-    return EffNetV2(cfgs, **kwargs)
-
-
-def effnetv2_m(**kwargs):
-    """
-    Constructs a EfficientNetV2-M model
-    """
-    cfgs = [
-        # t, c, n, s, SE
-        [1,  24,  3, 1, 0],
-        [4,  48,  5, 2, 0],
-        [4,  80,  5, 2, 0],
-        [4, 160,  7, 2, 1],
-        [6, 176, 14, 1, 1],
-        [6, 304, 18, 2, 1],
-        [6, 512,  5, 1, 1],
-    ]
-    return EffNetV2(cfgs, **kwargs)
-
-
-def effnetv2_l(**kwargs):
-    """
-    Constructs a EfficientNetV2-L model
-    """
-    cfgs = [
-        # t, c, n, s, SE
-        [1,  32,  4, 1, 0],
-        [4,  64,  7, 2, 0],
-        [4,  96,  7, 2, 0],
-        [4, 192, 10, 2, 1],
-        [6, 224, 19, 1, 1],
-        [6, 384, 25, 2, 1],
-        [6, 640,  7, 1, 1],
-    ]
-    return EffNetV2(cfgs, **kwargs)
-
-
-def effnetv2_xl(**kwargs):
-    """
-    Constructs a EfficientNetV2-XL model
-    """
-    cfgs = [
-        # t, c, n, s, SE
-        [1,  32,  4, 1, 0],
-        [4,  64,  8, 2, 0],
-        [4,  96,  8, 2, 0],
-        [4, 192, 16, 2, 1],
-        [6, 256, 24, 1, 1],
-        [6, 512, 32, 2, 1],
-        [6, 640,  8, 1, 1],
-    ]
-    return EffNetV2(cfgs, **kwargs)
+    
+    def load_pretrain(self, path):
+        state_dict = torch.load(path)
+        self.load_state_dict(state_dict, strict=True)

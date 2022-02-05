@@ -115,7 +115,7 @@ class MBConv(nn.Module):
 
 
 class EffNetV2(nn.Module):
-    def __init__(self):
+    def __init__(self, cfg):
         width_mult=1
         cfgs = [
                 # t, c, n, s, SE

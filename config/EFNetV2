@@ -16,11 +16,11 @@ model:
     backbone:
       name: EffNetV2
       model_name: efficientnet_lite_tiny
-      out_stages: [2,4,6]
+      out_stages: [2,3,5]
       activation: ReLU6
     fpn:
       name: GhostPAN
-      in_channels: [48, 128, 256]
+      in_channels: [64, 128, 256]
       out_channels: 96
       kernel_size: 5
       num_extra_level: 1

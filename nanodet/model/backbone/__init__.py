@@ -21,6 +21,7 @@ from .mobilenetv2 import MobileNetV2
 from .repvgg import RepVGG
 from .resnet import ResNet
 from .shufflenetv2 import ShuffleNetV2
+from efficientnetv2 import EffNetV2
 
 
 def build_backbone(cfg):
@@ -32,6 +33,9 @@ def build_backbone(cfg):
         return ShuffleNetV2(**backbone_cfg)
     elif name == "GhostNet":
         return GhostNet(**backbone_cfg)
+    elif name == "EffNetV2":
+        return EffNetV2(**backbone_cfg)
+        
     elif name == "MobileNetV2":
         return MobileNetV2(**backbone_cfg)
     elif name == "EfficientNetLite":

@@ -21,7 +21,7 @@ from .mobilenetv2 import MobileNetV2
 from .repvgg import RepVGG
 from .resnet import ResNet
 from .shufflenetv2 import ShuffleNetV2
-from efficientnetv2 import EffNetV2
+from .efficientnetv2 import EffNetV2
 
 
 def build_backbone(cfg):

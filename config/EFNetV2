@@ -5,7 +5,7 @@
 #           AP_small = 0.083
 #               AP_m = 0.278
 #               AP_l = 0.451
-save_dir: /content/drive/MyDrive/NanoDetsMicroEFT
+save_dir: /content/drive/MyDrive/NanoDetsMicroEFV2
 model:
   weight_averager:
     name: ExpMovingAverager
@@ -14,13 +14,13 @@ model:
     name: NanoDetPlus
     detach_epoch: 10
     backbone:
-      name: EfficientNetLite
+      name: EffNetV2
       model_name: efficientnet_lite_tiny
       out_stages: [2,4,6]
       activation: ReLU6
     fpn:
       name: GhostPAN
-      in_channels: [40, 112, 320]
+      in_channels: [48, 128, 256]
       out_channels: 96
       kernel_size: 5
       num_extra_level: 1
@@ -97,8 +97,8 @@ device:
   workers_per_gpu: 2
   batchsize_per_gpu: 60
 schedule:
-  resume: True
-  load_model: /content/drive/MyDrive/NanoDetsMicroEF/model_last.ckpt
+  #resume: True
+  #load_model: /content/drive/MyDrive/NanoDetsMicroEFV2/model_last.ckpt
   optimizer:
     name: AdamW
     lr: 0.001

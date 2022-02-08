@@ -58,7 +58,7 @@ def depth_bn(inp, oup, stride, activation):
           nn.BatchNorm2d(oup)
       )      
     
-class Net(nn.Module):    
+class MobileNetEdgeV2(nn.Module):    
   def __init__(self, model_name, out_stages=(1, 3, 5), activation="ReLU6", pretrain=True):
     super(Net, self).__init__()
     print("Hello")

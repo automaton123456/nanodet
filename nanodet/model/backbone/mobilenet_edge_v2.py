@@ -2,63 +2,69 @@ import torch
 import torch.nn as nn
 import math
 
-#Hideous code setup for quick test :)
-
 def conv_1x1_bn(inp, oup, stride, activation):
+    total_padding = (1 - 1) // 2
+  
     if activation == True:
       return nn.Sequential(
-          nn.Conv2d(inp, oup, 1, stride, 0, bias=False),
+          nn.Conv2d(inp, oup, 1, stride, total_padding, bias=False),
           nn.BatchNorm2d(oup),
           nn.ReLU6()
       ) 
     else:  
       return nn.Sequential(
-          nn.Conv2d(inp, oup, 1, stride, 0, bias=False),
-          nn.BatchNorm2d(oup),
+          nn.Conv2d(inp, oup, 1, stride, total_padding, bias=False),
+          #nn.BatchNorm2d(oup),
       )
 
 
 def conv_3x3_bn(inp, oup, stride, activation):
+    total_padding = (3 - 1) // 2
+
     if activation == True:
       return nn.Sequential(
-          nn.Conv2d(inp, oup, 3, stride, 1, bias=False),
+          nn.Conv2d(inp, oup, 3, stride, total_padding, bias=False),
           nn.BatchNorm2d(oup),
           nn.ReLU6()
       )
     else:
       return nn.Sequential(
-          nn.Conv2d(inp, oup, 3, stride, 1, bias=False),
-          nn.BatchNorm2d(oup)
+          nn.Conv2d(inp, oup, 3, stride, total_padding, bias=False),
+          #nn.BatchNorm2d(oup)
       )    
 
 def conv_5x5_bn(inp, oup, stride, activation):
+    total_padding = (5 - 1) // 2
+
     if activation == True:
       return nn.Sequential(
-          nn.Conv2d(inp, oup, 5, stride, 2, bias=False),
+          nn.Conv2d(inp, oup, 5, stride, total_padding, bias=False),
           nn.BatchNorm2d(oup),
           nn.ReLU6()
       )
     else:    
       return nn.Sequential(
-          nn.Conv2d(inp, oup, 5, stride, 2, bias=False),
-          nn.BatchNorm2d(oup),
+          nn.Conv2d(inp, oup, 5, stride, total_padding, bias=False),
+          #nn.BatchNorm2d(oup),
       )
 
 def depth_bn(inp, oup, stride, activation):
+    total_padding = (3 - 1) // 2
+    
     if activation == True:
       return nn.Sequential( 
-          nn.Conv2d(inp, oup, 3, stride, 1, bias=False, groups = inp),
+          nn.Conv2d(inp, oup, 3, stride, total_padding, bias=False, groups = inp),
           nn.BatchNorm2d(oup),
           nn.ReLU6()
       ) 
     
     else:
       return nn.Sequential( 
-          nn.Conv2d(inp, oup, 3, stride, 1, bias=False, groups = inp),
-          nn.BatchNorm2d(oup)
+          nn.Conv2d(inp, oup, 3, stride, total_padding, bias=False, groups = inp),
+          #nn.BatchNorm2d(oup)
       )      
     
-class MobileNetEdgeV2(nn.Module):    
+class Net(nn.Module):    
   def __init__(self, model_name, out_stages=(1, 3, 5), activation="ReLU6", pretrain=True):
     super(Net, self).__init__()
     print("Hello")
@@ -85,13 +91,13 @@ class MobileNetEdgeV2(nn.Module):
     self.b2_3 = conv_3x3_bn(16, 64, 1, True)
     self.b2_4 = conv_1x1_bn(192, 48, 1, False)
 
-    self.b3_0 = conv_1x1_bn(256, 48, 1, False)
+    #self.b3_0 = conv_1x1_bn(256, 48, 1, False)
     self.b3_1 = conv_3x3_bn(16, 64, 1, True)
     self.b3_2 = conv_3x3_bn(16, 64, 1, True)
     self.b3_3 = conv_3x3_bn(16, 64, 1, True)
     self.b3_4 = conv_1x1_bn(192, 48, 1, False)
 
-    self.b4_0 = conv_1x1_bn(256, 48, 1, False)
+    #self.b4_0 = conv_1x1_bn(256, 48, 1, False)
     self.b4_1 = conv_3x3_bn(16, 64, 1, True)
     self.b4_2 = conv_3x3_bn(16, 64, 1, True)
     self.b4_3 = conv_3x3_bn(16, 64, 1, True)
@@ -122,15 +128,15 @@ class MobileNetEdgeV2(nn.Module):
     self.b9_2 = conv_1x1_bn(640, 112, 1, False)
 
     self.b10_0 = conv_1x1_bn(112, 448, 1, True)
-    self.b10_1 = conv_3x3_bn(448, 448, 1, True)
+    self.b10_1 = depth_bn(448, 448, 1, True)
     self.b10_2 = conv_1x1_bn(448, 112, 1, False)
 
     self.b11_0 = conv_1x1_bn(112, 448, 1, True)
-    self.b11_1 = conv_3x3_bn(448, 448, 1, True)
+    self.b11_1 = depth_bn(448, 448, 1, True)
     self.b11_2 = conv_1x1_bn(448, 112, 1, False)
 
     self.b12_0 = conv_1x1_bn(112, 448, 1, True)
-    self.b12_1 = conv_3x3_bn(448, 448, 1, True)
+    self.b12_1 = depth_bn(448, 448, 1, True)
     self.b12_2 = conv_1x1_bn(448, 112, 1, False)    
 
     self.b13_0 = conv_1x1_bn(112, 896, 1, True)
@@ -339,6 +345,7 @@ class MobileNetEdgeV2(nn.Module):
   def load_pretrain(self, path):
         state_dict = torch.load(path)
         self.load_state_dict(state_dict, strict=True)
+
 
 
 

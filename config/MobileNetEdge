@@ -14,7 +14,7 @@ model:
     name: NanoDetPlus
     detach_epoch: 10
     backbone:
-      name: EffNetV2
+      name: MobileNetEdgeV2
       model_name: efficientnet_lite_tiny
       out_stages: [2,3,5]
       activation: ReLU6

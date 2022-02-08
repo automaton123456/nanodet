@@ -64,10 +64,9 @@ def depth_bn(inp, oup, stride, activation):
           #nn.BatchNorm2d(oup)
       )      
     
-class Net(nn.Module):    
+class MobileNetEdgeV2(nn.Module):    
   def __init__(self, model_name, out_stages=(1, 3, 5), activation="ReLU6", pretrain=True):
-    super(Net, self).__init__()
-    print("Hello")
+    super(MobileNetEdgeV2, self).__init__()
 
     self.stem = nn.Sequential(
         conv_5x5_bn(3, 32, 2, True),
@@ -230,7 +229,7 @@ class Net(nn.Module):
       
       x = torch.add(x,b)
 
-      print("Level 1 " + str(x.size()))
+      #print("Level 1 " + str(x.size()))
       output.append(x)
 
       #Block 5
@@ -290,7 +289,7 @@ class Net(nn.Module):
       b = self.b12_2(b)
       x = torch.add(x,b) 
 
-      print("Level 2 " + str(x.size()))
+      #print("Level 2 " + str(x.size()))
       output.append(x)
 
       #Block 13
@@ -319,7 +318,7 @@ class Net(nn.Module):
       x = torch.add(x, b)
 
       #Block 17
-      print("Level 3 " + str(x.size()))
+      #print("Level 3 " + str(x.size()))
       output.append(x)
       #x = self.b17_0(x)
       #x = self.b17_1(x)

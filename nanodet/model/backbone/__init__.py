@@ -36,9 +36,9 @@ def build_backbone(cfg):
         return GhostNet(**backbone_cfg)
     elif name == "EffNetV2":
         return EffNetV2(**backbone_cfg)
-    elif name == "MobileNetV2":
-        return MobileNetEdgeV2(**backbone_cfg)
     elif name == "MobileNetEdgeV2":
+        return MobileNetEdgeV2(**backbone_cfg)
+    elif name == "MobileNetV2":
         return MobileNetV2(**backbone_cfg)
     elif name == "EfficientNetLite":
         return EfficientNetLite(**backbone_cfg)

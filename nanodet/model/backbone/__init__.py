@@ -23,6 +23,7 @@ from .resnet import ResNet
 from .shufflenetv2 import ShuffleNetV2
 from .efficientnetv2 import EffNetV2
 from .mobilenet_edge_v2 import MobileNetEdgeV2
+from .mobilenet_edge_v2_1080 import MobileNetEdgeV21080
 
 
 def build_backbone(cfg):
@@ -40,6 +41,8 @@ def build_backbone(cfg):
         return MobileNetEdgeV2(**backbone_cfg)
     elif name == "MobileNetV2":
         return MobileNetV2(**backbone_cfg)
+    elif name == "MobileNetEdgeV21080"
+        return MobileNetV21080(**backbone_cfg)
     elif name == "EfficientNetLite":
         return EfficientNetLite(**backbone_cfg)
     elif name == "CustomCspNet":

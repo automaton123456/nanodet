@@ -64,9 +64,9 @@ def depth_bn(inp, oup, stride, activation):
           #nn.BatchNorm2d(oup)
       )      
     
-class MobileNetEdgeV2(nn.Module):    
+class MobileNetEdgeV21080(nn.Module):    
   def __init__(self, model_name, out_stages=(1, 3, 5), activation="ReLU6", pretrain=True):
-    super(MobileNetEdgeV2, self).__init__()
+    super(MobileNetEdgeV21080, self).__init__()
 
     self.stem = nn.Sequential(
         conv_5x5_bn(3, 32, 2, True),

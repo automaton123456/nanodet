@@ -23,7 +23,7 @@ from .resnet import ResNet
 from .shufflenetv2 import ShuffleNetV2
 from .efficientnetv2 import EffNetV2
 from .mobilenet_edge_v2 import MobileNetEdgeV2
-from .mobilenet_edge_v2_1080 import MobileNetEdgeV21280
+from .mobilenet_edge_v2_1280 import MobileNetEdgeV21280
 
 def build_backbone(cfg):
     backbone_cfg = copy.deepcopy(cfg)

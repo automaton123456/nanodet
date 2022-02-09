@@ -97,8 +97,8 @@ device:
   workers_per_gpu: 2
   batchsize_per_gpu: 60
 schedule:
-  #resume: True
-  #load_model: /content/drive/MyDrive/NanoDetsMNE/model_last.ckpt
+  resume: True
+  load_model: /content/drive/MyDrive/NanoDetsMNE/model_last.ckpt
   optimizer:
     name: AdamW
     lr: 0.001

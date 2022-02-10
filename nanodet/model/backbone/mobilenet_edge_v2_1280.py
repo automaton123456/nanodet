@@ -67,8 +67,6 @@ def depth_bn(inp, oup, stride, activation):
 class MobileNetEdgeV21280(nn.Module):    
   def __init__(self, model_name, out_stages=(1, 3, 5), activation="ReLU6", pretrain=True):
     super(MobileNetEdgeV21280, self).__init__()
-    print("Hello")
-
     self.stem = nn.Sequential(
         conv_5x5_bn(3, 64, 2, True),
         conv_1x1_bn(64, 24, 1, False),
@@ -81,7 +79,7 @@ class MobileNetEdgeV21280(nn.Module):
     self.b0_2 = conv_3x3_bn(16, 64, 1, True)
     self.b0_3 = conv_1x1_bn(192, 48, 1, False)
 
-    self.b1_0 = conv_3x3_bn(48, 384, 1, True)
+    self.b1_0 = conv_3x3_bn(48, 384, 2, True)
     self.b1_1 = conv_1x1_bn(384, 64, 1, False)
 
     self.b2_0 = conv_3x3_bn(16, 64, 1, True)
@@ -99,7 +97,7 @@ class MobileNetEdgeV21280(nn.Module):
     self.b4_3 = conv_3x3_bn(16, 64, 1, True)
     self.b4_4 = conv_1x1_bn(256, 64, 1, False)
 
-    self.b5_0 = conv_3x3_bn(64, 512, 1, True)
+    self.b5_0 = conv_3x3_bn(64, 512, 2, True)
     self.b5_1 = conv_1x1_bn(512, 128, 1, False)
 
     self.b6_0 = conv_1x1_bn(128, 512, 1, True)
@@ -131,7 +129,7 @@ class MobileNetEdgeV21280(nn.Module):
     self.b12_2 = conv_1x1_bn(640, 160, 1, False)    
 
     self.b13_0 = conv_1x1_bn(160, 1280, 1, True)
-    self.b13_1 = depth_bn(1280, 1280, 1, True)
+    self.b13_1 = depth_bn(1280, 1280, 2, True)
     self.b13_2 = conv_1x1_bn(1280, 192, 1, False)
 
     self.b14_0 = conv_1x1_bn(192, 768, 1, True)
@@ -211,7 +209,7 @@ class MobileNetEdgeV21280(nn.Module):
       
       x = torch.add(x,b)
 
-      print("Level 1 " + str(x.size()))
+      #print("Level 1 " + str(x.size()))
       output.append(x)
 
       #Block 5
@@ -259,7 +257,7 @@ class MobileNetEdgeV21280(nn.Module):
       b = self.b12_2(b)
       x = torch.add(x,b) 
 
-      print("Level 2 " + str(x.size()))
+      #print("Level 2 " + str(x.size()))
       output.append(x)
 
       #Block 13
@@ -291,7 +289,7 @@ class MobileNetEdgeV21280(nn.Module):
       x = self.b17_2(x)
       #x = self.b17_3(x)
 
-      print("Level 3 " + str(x.size()))
+      #print("Level 3 " + str(x.size()))
       output.append(x)
 
       return output #x

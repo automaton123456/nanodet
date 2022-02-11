@@ -184,7 +184,7 @@ class MobileNetEdgeV21280(nn.Module):
   
       b = self.b2_4(b)
 
-      print(b.size())
+      #print(b.size())
       
       x = torch.add(x,b)
 

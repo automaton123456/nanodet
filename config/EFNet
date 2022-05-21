@@ -95,10 +95,10 @@ data:
 device:
   gpu_ids: [0] # Set like [0, 1, 2, 3] if you have multi-GPUs
   workers_per_gpu: 2
-  batchsize_per_gpu: 60
+  batchsize_per_gpu: 32
 schedule:
-  resume: True
-  load_model: /content/drive/MyDrive/NanoDetsMicroEFHB/model_last.ckpt
+  #resume: True
+  #load_model: /content/drive/MyDrive/NanoDetsMicroEFHB/model_last.ckpt
   optimizer:
     name: AdamW
     lr: 0.001

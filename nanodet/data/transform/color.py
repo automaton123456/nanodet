@@ -34,6 +34,17 @@ def random_saturation(img, alpha_low, alpha_up):
     img = cv2.cvtColor(hsv_img, cv2.COLOR_HSV2BGR)
     return img
 
+def random_color_map(img):
+    choice = random.randint(0, 6)
+    if choice == 1:
+        return cv2.applyColorMap(img, cv2.COLORMAP_JET)
+    elif choice == 2:    
+        return cv2.applyColorMap(img, cv2.COLORMAP_OCEAN)
+    elif choice == 3:    
+        return cv2.applyColorMap(img, cv2.COLORMAP_BONE)   
+    
+    return img
+
 
 def normalize(meta, mean, std):
     img = meta["img"].astype(np.float32)
@@ -63,6 +74,9 @@ def color_aug_and_norm(meta, kwargs):
 
     if "saturation" in kwargs and random.randint(0, 1):
         img = random_saturation(img, *kwargs["saturation"])
+        
+    img = random_color_map(img)
+    
     # cv2.imshow('trans', img)
     # cv2.waitKey(0)
     img = _normalize(img, *kwargs["normalize"])

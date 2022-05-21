@@ -64,7 +64,9 @@ def _normalize(img, mean, std):
 
 
 def color_aug_and_norm(meta, kwargs):
-    img = meta["img"].astype(np.float32) / 255
+    img = meta["img"]
+    img = random_color_map(img)
+    img = img.astype(np.float32) / 255
 
     if "brightness" in kwargs and random.randint(0, 1):
         img = random_brightness(img, kwargs["brightness"])
@@ -75,7 +77,7 @@ def color_aug_and_norm(meta, kwargs):
     if "saturation" in kwargs and random.randint(0, 1):
         img = random_saturation(img, *kwargs["saturation"])
         
-    img = random_color_map(img)
+ 
     
     # cv2.imshow('trans', img)
     # cv2.waitKey(0)

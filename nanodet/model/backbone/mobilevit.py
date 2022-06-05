@@ -130,7 +130,7 @@ class MobileViTV1(nn.Module):
         self.models_s = MobileViT(256, cfg_s["features"], cfg_s["d"], cfg_s["layers"], cfg_s["expansion_ratio"])
         
     def forward(self, x):
-        self.models_s.forward(x)
+        return self.models_s.forward(x)
         
     def load_pretrain(self, path):
         print("Not implemented yet")

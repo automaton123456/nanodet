@@ -24,6 +24,7 @@ from .shufflenetv2 import ShuffleNetV2
 from .efficientnetv2 import EffNetV2
 from .mobilenet_edge_v2 import MobileNetEdgeV2
 from .mobilenet_edge_v2_1280 import MobileNetEdgeV21280
+from .mobilevit import MobileViTV1
 
 def build_backbone(cfg):
     backbone_cfg = copy.deepcopy(cfg)
@@ -48,5 +49,7 @@ def build_backbone(cfg):
         return CustomCspNet(**backbone_cfg)
     elif name == "RepVGG":
         return RepVGG(**backbone_cfg)
+    elif name == "MobileViT":
+        return MobileViTV1(**backbone_cfg)  
     else:
         raise NotImplementedError

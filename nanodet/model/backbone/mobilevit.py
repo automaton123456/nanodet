@@ -126,11 +126,12 @@ if __name__ == "__main__":
 
 class MobileViTV1(nn.Module):
     def __init__(self, model_name, out_stages=(1, 3, 5), activation="ReLU6", pretrain=True):
+        super(MobileViTV1, self).__init__()
         cfg_s = model_cfg["s"]
-        self.models = MobileViT(256, cfg_s["features"], cfg_s["d"], cfg_s["layers"], cfg_s["expansion_ratio"])
+        self.model = MobileViT(320, cfg_s["features"], cfg_s["d"], cfg_s["layers"], cfg_s["expansion_ratio"])
         
     def forward(self, x):
-        return self.models_s.forward(x)
+        return self.model.forward(x)
         
     def load_pretrain(self, path):
         print("Not implemented yet")
@@ -148,6 +149,3 @@ class MobileViTV1(nn.Module):
             elif isinstance(m, nn.Linear):
                 m.weight.data.normal_(0, 0.001)
                 m.bias.data.zero_()
-        
-        
-        

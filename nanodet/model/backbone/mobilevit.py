@@ -92,7 +92,7 @@ def MobileViT_S(img_size = 256, num_classes = 1000):
     model_s = MobileViT(img_size, cfg_s["features"], cfg_s["d"], cfg_s["layers"], cfg_s["expansion_ratio"], num_classes)
     return model_s
 
-
+'''
 if __name__ == "__main__":
     img = torch.randn(1, 3, 256, 256)
 
@@ -111,3 +111,18 @@ if __name__ == "__main__":
     print("XXS params: ", sum(p.numel() for p in model_xxs.parameters()))
     print(" XS params: ", sum(p.numel() for p in model_xs.parameters()))
     print("  S params: ", sum(p.numel() for p in model_s.parameters()))
+'''
+
+class MobileViTV1(nn.Module):
+    def __init__(self, model_name, out_stages=(1, 3, 5), activation="ReLU6", pretrain=True):
+        cfg_s = model_cfg["s"]
+        self.models_s = MobileViT(256, cfg_s["features"], cfg_s["d"], cfg_s["layers"], cfg_s["expansion_ratio"])
+        
+    def forward(self, x):
+        self.models_s.forward(x)
+        
+    def load_pretrain(self, path):
+        print("Not implemented yet")
+        
+        
+        

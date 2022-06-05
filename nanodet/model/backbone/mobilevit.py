@@ -85,7 +85,7 @@ class MobileViT(nn.Module):
         #x = x.view(x.size(0), -1)
         #x = self.fc(x)
         
-        return x
+        return output
 
 
 def MobileViT_XXS(img_size = 256, num_classes = 1000):

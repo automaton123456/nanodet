@@ -149,3 +149,6 @@ class MobileViTV1(nn.Module):
             elif isinstance(m, nn.Linear):
                 m.weight.data.normal_(0, 0.001)
                 m.bias.data.zero_()
+        
+        
+        

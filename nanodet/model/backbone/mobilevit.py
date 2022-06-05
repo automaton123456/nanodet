@@ -58,22 +58,33 @@ class MobileViT(nn.Module):
             nn.Conv2d(in_channels = features_list[9], out_channels = features_list[10], kernel_size = 1, stride = 1, padding = 0)
         )
 
-        self.avgpool = nn.AvgPool2d(kernel_size = img_size // 32)
-        self.fc = nn.Linear(features_list[10], num_classes)
+        #self.avgpool = nn.AvgPool2d(kernel_size = img_size // 32)
+        #self.fc = nn.Linear(features_list[10], num_classes)
+        
+        self.blocks = []
 
 
     def forward(self, x):
+        output = []
+        
         # Stem
         x = self.stem(x)
         # Body
         x = self.stage1(x)
         x = self.stage2(x)
+        output.append(x)
+        
         x = self.stage3(x)
+        output.append(x)
+        
         x = self.stage4(x)
+        output.append(x)
+        
         # Head
-        x = self.avgpool(x)
-        x = x.view(x.size(0), -1)
-        x = self.fc(x)
+        #x = self.avgpool(x)
+        #x = x.view(x.size(0), -1)
+        #x = self.fc(x)
+        
         return x
 
 

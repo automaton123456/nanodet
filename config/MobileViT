@@ -20,7 +20,7 @@ model:
       activation: ReLU6
     fpn:
       name: GhostPAN
-      in_channels: [40, 112, 320]
+      in_channels: [96, 128, 640]
       out_channels: 96
       kernel_size: 5
       num_extra_level: 1

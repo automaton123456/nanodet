@@ -60,8 +60,18 @@ def random_tee(img):
 
     x = random.randint(0, 320 - line_thickness)
     y  = random.randint(0, 320 - line_length)
+    
+    offset = random.randint(0,6)
+    if offset == 0:
+        offset = 0
+    elif offset == 5:
+        offset = line_thickness
+    elif offset == 6:
+        offset = 0 - line_thickness
+    
+    x2 = x
 
-    cv2.line(img, (x, y), (x, y + line_length), (b,g,r), thickness=line_thickness)
+    cv2.line(img, (x, y), (x + offset, y + line_length), (b,g,r), thickness=line_thickness)
     
     return img
 

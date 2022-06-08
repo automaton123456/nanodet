@@ -35,13 +35,33 @@ def random_saturation(img, alpha_low, alpha_up):
     return img
 
 def random_color_map(img):
-    choice = random.randint(0, 6)
+    #3 in 10
+    choice = random.randint(0, 10)
     if choice == 1:
         return cv2.applyColorMap(img, cv2.COLORMAP_JET)
     elif choice == 2:    
         return cv2.applyColorMap(img, cv2.COLORMAP_OCEAN)
     elif choice == 3:    
         return cv2.applyColorMap(img, cv2.COLORMAP_BONE)   
+    
+    return img
+
+
+def random_tee(img):    
+    #1 in 3
+    if random.randint(0,2) == 2:
+        return img
+        
+    b = random.randint(180,255)
+    g = random.randint(180,255)
+    r = random.randint(180,255)
+    line_thickness = random.randint(2,4)
+    line_length = random.randint(6,12)
+
+    x = random.randint(0, 320 - line_thickness)
+    y  = random.randint(0, 320 - line_length)
+
+    cv2.line(img, (x, y), (x, y + line_length), (b,g,r), thickness=line_thickness)
     
     return img
 
@@ -66,6 +86,7 @@ def _normalize(img, mean, std):
 def color_aug_and_norm(meta, kwargs):
     img = meta["img"]
     img = random_color_map(img)
+    img = random_tee(img)
     img = img.astype(np.float32) / 255
 
     if "brightness" in kwargs and random.randint(0, 1):

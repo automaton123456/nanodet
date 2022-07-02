@@ -37,7 +37,7 @@ def random_saturation(img, alpha_low, alpha_up):
     img = cv2.cvtColor(hsv_img, cv2.COLOR_HSV2BGR)
     return img
 
-def augment_hsv(img, hgain=0.9, sgain=0.9, vgain=0.9):
+def augment_hsv(im, hgain=0.9, sgain=0.9, vgain=0.9):
     # HSV color-space augmentation
     if hgain or sgain or vgain:
         r = np.random.uniform(-1, 1, 3) * [hgain, sgain, vgain] + 1  # random gains

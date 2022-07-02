@@ -16,7 +16,10 @@ import random
 
 import cv2
 import numpy as np
+import imgaug.augmenters as iaa
 
+import cv2
+from google.colab.patches import cv2_imshow
 
 def random_brightness(img, delta):
     img += random.uniform(-delta, delta)
@@ -34,6 +37,21 @@ def random_saturation(img, alpha_low, alpha_up):
     img = cv2.cvtColor(hsv_img, cv2.COLOR_HSV2BGR)
     return img
 
+def augment_hsv(img, hgain=0.9, sgain=0.9, vgain=0.9):
+    # HSV color-space augmentation
+    if hgain or sgain or vgain:
+        r = np.random.uniform(-1, 1, 3) * [hgain, sgain, vgain] + 1  # random gains
+        hue, sat, val = cv2.split(cv2.cvtColor(im, cv2.COLOR_BGR2HSV))
+        dtype = im.dtype  # uint8
+
+        x = np.arange(0, 256, dtype=r.dtype)
+        lut_hue = ((x * r[0]) % 180).astype(dtype)
+        lut_sat = np.clip(x * r[1], 0, 255).astype(dtype)
+        lut_val = np.clip(x * r[2], 0, 255).astype(dtype)
+
+        im_hsv = cv2.merge((cv2.LUT(hue, lut_hue), cv2.LUT(sat, lut_sat), cv2.LUT(val, lut_val)))
+        cv2.cvtColor(im_hsv, cv2.COLOR_HSV2BGR, dst=im)  # no return needed
+
 def random_color_map(img):
     #3 in 10
     choice = random.randint(0, 10)
@@ -48,8 +66,8 @@ def random_color_map(img):
 
 
 def random_tee(img):    
-    #1 in 3
-    if random.randint(0,2) == 2:
+    #1 in 4
+    if random.randint(0,3) == 2:
         return img
         
     b = random.randint(180,255)
@@ -95,20 +113,33 @@ def _normalize(img, mean, std):
 
 def color_aug_and_norm(meta, kwargs):
     img = meta["img"]
-    img = random_color_map(img)
+    #img = random_color_map(img)
     img = random_tee(img)
-    img = img.astype(np.float32) / 255
 
-    if "brightness" in kwargs and random.randint(0, 1):
-        img = random_brightness(img, kwargs["brightness"])
+    #if "brightness" in kwargs and random.randint(0, 1):
+    #    img = random_brightness(img, kwargs["brightness"])
 
-    if "contrast" in kwargs and random.randint(0, 1):
-        img = random_contrast(img, *kwargs["contrast"])
+    #if "contrast" in kwargs and random.randint(0, 1):
+    #    img = random_contrast(img, *kwargs["contrast"])
 
-    if "saturation" in kwargs and random.randint(0, 1):
-        img = random_saturation(img, *kwargs["saturation"])
+    #if "saturation" in kwargs and random.randint(0, 1):
+    #    img = random_saturation(img, *kwargs["saturation"])
         
- 
+    #Random color using HSV    
+    if random.randint(0, 1):
+        augment_hsv(img, hgain=0.6, sgain=0.6, vgain=0.6)
+    
+    #Random contrast 1 in 4
+    if random.randint(0, 3) == 0:
+        aug = iaa.GammaContrast((0.5, 2.0))
+        img = aug.augment(image=img)
+        
+    #Add random motion blur to images, 1 in 10
+    if random.randint(0, 10) == 0:
+        aug = iaa.MotionBlur(k=[3,32], angle=[-45, 45])
+        img = aug.augment(image=img)
+        
+    img = img.astype(np.float32) / 255    
     
     # cv2.imshow('trans', img)
     # cv2.waitKey(0)

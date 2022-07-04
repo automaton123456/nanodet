@@ -306,7 +306,6 @@ class ShapeTransform:
         self.translate_ratio = translate
 
     def __call__(self, meta_data, dst_shape):
-        print("Hello")
         raw_img = meta_data["img"]
         height = raw_img.shape[0]  # shape(h,w,c)
         width = raw_img.shape[1]

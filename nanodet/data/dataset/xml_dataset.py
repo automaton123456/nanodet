@@ -113,6 +113,8 @@ class XMLDataset(CocoDataset):
                     )
                     continue
                 coco_box = [max(xmin, 0), max(ymin, 0), min(w, width), min(h, height)]
+                print("coco_box")
+                print(coco_box)
                 ann = {
                     "image_id": idx + 1,
                     "bbox": coco_box,

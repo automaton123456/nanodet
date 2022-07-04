@@ -59,5 +59,9 @@ class Pipeline:
         print(meta['gt_bboxes'])
         
         meta = self.shape_transform(meta, dst_shape=dst_shape)
+        
+        print('Pipeline After')
+        print(meta['gt_bboxes'])
+        
         meta = self.color(meta=meta)
         return meta

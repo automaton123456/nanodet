@@ -28,6 +28,7 @@ class LegacyPipeline:
             "Deprecated warning! Pipeline from nanodet v0.x has been deprecated,"
             "Please use new Pipeline and update your config!"
         )
+        
         self.warp = functools.partial(
             warp_and_resize, warp_kwargs=cfg, keep_ratio=keep_ratio
         )
@@ -54,6 +55,8 @@ class Pipeline:
         self.color = functools.partial(color_aug_and_norm, kwargs=cfg)
 
     def __call__(self, dataset: Dataset, meta: Dict, dst_shape: Tuple[int, int]):
+         print(meta['gt_bboxes'])
+        
         meta = self.shape_transform(meta, dst_shape=dst_shape)
         meta = self.color(meta=meta)
         return meta

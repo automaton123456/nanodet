@@ -55,7 +55,8 @@ class Pipeline:
         self.color = functools.partial(color_aug_and_norm, kwargs=cfg)
 
     def __call__(self, dataset: Dataset, meta: Dict, dst_shape: Tuple[int, int]):
-         print(meta['gt_bboxes'])
+         print('Pipeline')
+        print(meta['gt_bboxes'])
         
         meta = self.shape_transform(meta, dst_shape=dst_shape)
         meta = self.color(meta=meta)

@@ -114,9 +114,6 @@ class XMLDataset(CocoDataset):
                     continue
                 coco_box = [max(xmin, 0), max(ymin, 0), min(w, width), min(h, height)]
                 
-                if "1574026236611_ball" in file_name:
-                    print("coco_box")
-                    print(coco_box)
                 ann = {
                     "image_id": idx + 1,
                     "bbox": coco_box,

@@ -126,9 +126,7 @@ class CocoDataset(BaseDataset):
         file_name = img_info["file_name"]
         image_path = os.path.join(self.img_path, file_name)
         img = cv2.imread(image_path)
-        if img is None:
-            print("image {} read failed.".format(image_path))
-            raise FileNotFoundError("Cant load image! Please check image path!")
+
         ann = self.get_img_annotation(idx)
         
         if "1574026236611_ball" in file_name:

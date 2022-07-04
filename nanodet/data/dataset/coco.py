@@ -103,6 +103,7 @@ class CocoDataset(BaseDataset):
             gt_bboxes_ignore = np.array(gt_bboxes_ignore, dtype=np.float32)
         else:
             gt_bboxes_ignore = np.zeros((0, 4), dtype=np.float32)
+                        
         annotation = dict(
             bboxes=gt_bboxes, labels=gt_labels, bboxes_ignore=gt_bboxes_ignore
         )
@@ -129,6 +130,11 @@ class CocoDataset(BaseDataset):
             print("image {} read failed.".format(image_path))
             raise FileNotFoundError("Cant load image! Please check image path!")
         ann = self.get_img_annotation(idx)
+        
+        if "1574026236611_ball" in file_name:
+            print("bbox")
+            print(ann)
+        
         meta = dict(
             img=img, img_info=img_info, gt_bboxes=ann["bboxes"], gt_labels=ann["labels"]
         )

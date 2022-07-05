@@ -144,7 +144,7 @@ def motion_blur(meta):
     labels = np.array([],dtype=np.int32)
 
     for box in bbs:
-        np.append(labels, box.label)
+        labels = np.append(labels, box.label)
     
     meta['gt_labels'] = labels
     meta["img"] = image

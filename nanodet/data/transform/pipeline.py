@@ -65,6 +65,10 @@ def zoom_to_bbox(meta, bbox_index, dst_shape):
     #    imgaug.augmenters.size.CropToFixedSize(width=320, height=320, position="center")
     #])
     
+    aug2 = iaa.Affine(translate_px={"x": int(-1 * (((x1+x2) / 2)- (width /2) )), "y": int(-1 * (((y1 + y2)/2)-(height / 2)))})
+    aug3 = iaa.Affine(scale=(2,5))
+    aug4 = iaa.Fliplr(0.5)
+        
     aug = imgaug.augmenters.size.CropToFixedSize(width=320, height=320, position="center")
     image = aug.augment(image=image)
     
@@ -143,8 +147,7 @@ class Pipeline:
                     meta = self.shape_transform(meta, dst_shape=dst_shape)                 
         else:
             meta = self.shape_transform(meta, dst_shape=dst_shape)
-            
-        print(meta["warp_matrix"])    
+   
        
         meta = self.color(meta=meta)
         return meta

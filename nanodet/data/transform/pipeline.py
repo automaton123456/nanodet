@@ -135,38 +135,39 @@ class Pipeline:
         self.color = functools.partial(color_aug_and_norm, kwargs=cfg)
 
     def __call__(self, dataset: Dataset, meta: Dict, dst_shape: Tuple[int, int]):
-        print(dataset)
-        print(dataset.mode)
-        choice = random.randint(0, 8)
-        ball_found = -1
-        club_found = -1
+        if(dataset.mode == 'train'):
+            choice = random.randint(0, 8)
+            ball_found = -1
+            club_found = -1
         
-        if choice == 1:
-            labels = meta['gt_labels']
+            if choice == 1:
+                labels = meta['gt_labels']
             
-            if random.randint(0, 1):
-                for i, data in enumerate(labels):
-                    if data == 1:
-                        ball_found = i;
-                        break
+                if random.randint(0, 1):
+                    for i, data in enumerate(labels):
+                        if data == 1:
+                            ball_found = i;
+                            break
                         
-                if ball_found > -1:
-                    meta = zoom_to_bbox(meta, bbox_index=ball_found, dst_shape=dst_shape)
+                    if ball_found > -1:
+                        meta = zoom_to_bbox(meta, bbox_index=ball_found, dst_shape=dst_shape)
+                    else:
+                        meta = self.shape_transform(meta, dst_shape=dst_shape)
                 else:
-                    meta = self.shape_transform(meta, dst_shape=dst_shape)
+                    for i, data in enumerate(labels):
+                        if data == 2:
+                            club_found = i;
+                            break
+                        
+                    if club_found > -1:        
+                        meta = zoom_to_bbox(meta, bbox_index=club_found, dst_shape=dst_shape)
+                    else:
+                        meta = self.shape_transform(meta, dst_shape=dst_shape)                 
             else:
-                for i, data in enumerate(labels):
-                    if data == 2:
-                        club_found = i;
-                        break
-                        
-                if club_found > -1:        
-                    meta = zoom_to_bbox(meta, bbox_index=club_found, dst_shape=dst_shape)
-                else:
-                    meta = self.shape_transform(meta, dst_shape=dst_shape)                 
+                meta = self.shape_transform(meta, dst_shape=dst_shape)
+   
         else:
             meta = self.shape_transform(meta, dst_shape=dst_shape)
-   
-       
+        
         meta = self.color(meta=meta)
         return meta

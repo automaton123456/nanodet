@@ -68,8 +68,13 @@ def zoom_to_bbox(meta, bbox_index, dst_shape):
     aug2 = iaa.Affine(translate_px={"x": int(-1 * (((x1+x2) / 2)- (width /2) )), "y": int(-1 * (((y1 + y2)/2)-(height / 2)))})
     aug3 = iaa.Affine(scale=(2,5))
     aug4 = iaa.Fliplr(0.5)
-        
+    aug5 = iaa.Affine(translate_percent={"x": (-0.1,0.1), "y": (-0.1,0.1)}), imgaug.augmenters.size.CropToFixedSize(width=320, height=320, position="center")     
     aug = imgaug.augmenters.size.CropToFixedSize(width=320, height=320, position="center")
+    
+    image = aug2.augment(image=image)
+    image = aug3.augment(image=image)
+    image = aug4.augment(image=image)
+    image = aug5.augment(image=image)
     image = aug.augment(image=image)
     
     #image_aug, bbs_aug = seq(image=image, bounding_boxes=bbs)

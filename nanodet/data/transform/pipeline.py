@@ -112,7 +112,7 @@ class Pipeline:
         club_found = -1
         
         if 1 == 1: #choice == 1:
-            labels = meta_data['gt_labels']
+            labels = meta['gt_labels']
             
             if random.randint(0, 1):
                 for i, data in enumerate(labels):

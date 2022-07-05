@@ -137,6 +137,7 @@ class Pipeline:
     def __call__(self, dataset: Dataset, meta: Dict, dst_shape: Tuple[int, int]):
         print(self.cfg)
         print(dataset)
+        print(dataset.mode)
         choice = random.randint(0, 8)
         ball_found = -1
         club_found = -1

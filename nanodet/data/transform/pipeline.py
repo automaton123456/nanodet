@@ -109,11 +109,11 @@ class Pipeline:
         self.color = functools.partial(color_aug_and_norm, kwargs=cfg)
 
     def __call__(self, dataset: Dataset, meta: Dict, dst_shape: Tuple[int, int]):           
-        choice = random.randint(0, 10)
+        choice = random.randint(0, 8)
         ball_found = -1
         club_found = -1
         
-        if 1 == 1: #choice == 1:
+        if choice == 1:
             labels = meta['gt_labels']
             
             if random.randint(0, 1):

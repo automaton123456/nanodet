@@ -63,7 +63,7 @@ def zoom_to_bbox(meta, bbox_index, dst_shape):
     #      translate_percent={"x": (-0.1,0.1), "y": (-0.1,0.1)},
     #    ),
     #    imgaug.augmenters.size.CropToFixedSize(width=320, height=320, position="center")
-    ])
+    #])
     
     #Translate object of interest to center, then scale, then flip, then translate randomly, then crop to center square
     aug1 = iaa.Affine(translate_px={"x": int(-1 * (((x1+x2) / 2)- (width /2) )), "y": int(-1 * (((y1 + y2)/2)-(height / 2)))})

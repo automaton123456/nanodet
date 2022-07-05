@@ -115,7 +115,7 @@ class Pipeline:
         ball_found = -1
         club_found = -1
         
-        if 2= 1: #choice == 1:
+        if 2== 1: #choice == 1:
             labels = meta['gt_labels']
             
             if random.randint(0, 1):

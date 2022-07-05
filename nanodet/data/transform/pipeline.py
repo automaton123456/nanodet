@@ -15,6 +15,7 @@
 import functools
 import warnings
 import random
+import imgaug
 import imgaug as ia
 import imgaug.augmenters as iaa
 from imgaug.augmentables.bbs import BoundingBox, BoundingBoxesOnImage

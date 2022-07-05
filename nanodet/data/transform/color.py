@@ -110,6 +110,43 @@ def _normalize(img, mean, std):
     img = (img - mean) / std
     return img
 
+def motion_blur(meta):
+    labels = meta['gt_labels']
+    gt_bboxes = meta['gt_bboxes']
+    all_bboxes = []
+    image = meta["img"]
+    
+    for index,bbox in enumerate(gt_bboxes):
+        all_bboxes.append(BoundingBox(x1=bbox[0], y1=bbox[1], x2=bbox[2], y2=bbox[3], label=labels[index]))
+        
+    if len(all_bboxes) == 0:
+        return meta
+    
+    bbs = BoundingBoxesOnImage(all_bboxes, shape=image.shape)
+
+    rand_angle = random.randrange(-45, 45)
+    rand_k = random.randrange(3, 20)
+    
+    
+    #Apply random motion bluring
+    aug = iaa.MotionBlur(k=rand_k, angle=rand_angle)   
+    
+    bbs = aug.augment_bounding_boxes(bbs)
+    image = aug.augment(image=image)
+    
+    bbs = bbs.clip_out_of_image()
+    meta["gt_bboxes"] = bbs.to_xyxy_array()
+    
+    labels = np.array([],dtype=np.int32)
+
+    for box in bbs:
+        np.append(labels, box.label)
+    
+    meta['gt_labels'] = labels
+    meta["img"] = image
+   
+    return meta
+
 
 def color_aug_and_norm(meta, kwargs):
     img = meta["img"]
@@ -136,8 +173,11 @@ def color_aug_and_norm(meta, kwargs):
         
     #Add random motion blur to images, 1 in 10
     if random.randint(0, 10) == 0:
-        aug = iaa.MotionBlur(k=[3,32], angle=[-45, 45])
-        img = aug.augment(image=img)
+        #aug = iaa.MotionBlur(k=[3,32], angle=[-45, 45])
+        #img = aug.augment(image=img)
+        
+        meta = motion_blur(meta)  
+        img = meta["img"]
         
     img = img.astype(np.float32) / 255    
     

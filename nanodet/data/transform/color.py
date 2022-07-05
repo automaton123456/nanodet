@@ -179,8 +179,8 @@ def color_aug_and_norm(meta, kwargs):
         #aug = iaa.MotionBlur(k=[3,32], angle=[-45, 45])
         #img = aug.augment(image=img)
         
-        meta = motion_blur(meta)  
-        img = meta["img"]
+        #meta = motion_blur(meta)  
+        #img = meta["img"]
         
     img = img.astype(np.float32) / 255    
     

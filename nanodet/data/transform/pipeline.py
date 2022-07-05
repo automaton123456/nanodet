@@ -66,7 +66,7 @@ def zoom_to_bbox(meta, bbox_index, dst_shape):
     #])
     
     aug = imgaug.augmenters.size.CropToFixedSize(width=320, height=320, position="center")
-    image = aug.augment(image)
+    image = aug.augment(image=image)
     
     #image_aug, bbs_aug = seq(image=image, bounding_boxes=bbs)
     #bbs_aug = bbs_aug.clip_out_of_image()

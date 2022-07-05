@@ -121,7 +121,7 @@ def motion_blur(meta):
     all_bboxes = []
     image = meta["img"]
     
-    if len(gt_bboxes) == 0:
+    if len(gt_bboxes) == 0 or len(labels) == 0:
         return meta
     
     for index,bbox in enumerate(gt_bboxes):

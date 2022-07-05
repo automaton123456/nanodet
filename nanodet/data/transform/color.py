@@ -15,8 +15,11 @@
 import random
 
 import cv2
-import numpy as np
+import imgaug
+import imgaug as ia
 import imgaug.augmenters as iaa
+from imgaug.augmentables.bbs import BoundingBox, BoundingBoxesOnImage
+import numpy as np
 
 import cv2
 from google.colab.patches import cv2_imshow

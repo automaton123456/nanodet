@@ -90,7 +90,7 @@ def zoom_to_bbox(meta, bbox_index, dst_shape):
     labels = np.array([],dtype=np.int32)
 
     for box in bbs:
-        np.append(labels, box.label)
+        labels = np.append(labels, box.label)
     
     meta['gt_labels'] = labels
     

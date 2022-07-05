@@ -116,7 +116,6 @@ def _normalize(img, mean, std):
 def motion_blur(meta):
     labels = meta['gt_labels']
     gt_bboxes = meta['gt_bboxes']
-    print("Motion Blur")
     
     all_bboxes = []
     image = meta["img"]
@@ -124,10 +123,7 @@ def motion_blur(meta):
     if len(gt_bboxes) == 0 or len(labels) == 0:
         return meta
     
-    for index,bbox in enumerate(gt_bboxes):
-        print(bbox)
-        print(labels[index])
-        
+    for index,bbox in enumerate(gt_bboxes):        
         all_bboxes.append(BoundingBox(x1=bbox[0], y1=bbox[1], x2=bbox[2], y2=bbox[3], label=labels[index]))
     
     bbs = BoundingBoxesOnImage(all_bboxes, shape=image.shape)

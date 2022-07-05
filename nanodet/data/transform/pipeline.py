@@ -65,10 +65,13 @@ def zoom_to_bbox(meta, bbox_index, dst_shape):
     #    imgaug.augmenters.size.CropToFixedSize(width=320, height=320, position="center")
     #])
     
+    aug = imgaug.augmenters.size.CropToFixedSize(width=320, height=320, position="center")
+    image = aug.augment(image)
+    
     #image_aug, bbs_aug = seq(image=image, bounding_boxes=bbs)
     #bbs_aug = bbs_aug.clip_out_of_image()
     #meta["gt_bboxes"] = bbs_aug.to_xyxy_array()
-    meta["img"] = [] #image
+    meta["img"] = image
     meta["height"] = 320
     meta["width"] = 320
     meta["warp_matrix"] = []

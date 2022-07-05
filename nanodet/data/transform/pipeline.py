@@ -72,7 +72,8 @@ def zoom_to_bbox(meta, bbox_index, dst_shape):
     meta["gt_bboxes"] = bbs_aug.to_xyxy_array()
     meta["img"] = image
     meta["height"] = 320
-    meta["width"] = 320
+    meta["width"] = 320'
+    meta["warp_matrix"] = []
    
     return meta
 

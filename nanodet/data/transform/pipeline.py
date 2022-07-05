@@ -37,8 +37,8 @@ def zoom_to_bbox(meta, bbox_index, dst_shape):
     image = meta["img"]
     
     
-    for bbox in gt_bboxes:
-        all_bboxes.append(BoundingBox(x1=bbox[0], y1=bbox[1], x2=bbox[2], y2=bbox[3]))
+    for index,bbox in enumerate(gt_bboxes):
+        all_bboxes.append(BoundingBox(x1=bbox[0], y1=bbox[1], x2=bbox[2], y2=bbox[3], label=labels[index]))
         
     if len(all_bboxes) == 0:
         return meta
@@ -93,6 +93,13 @@ def zoom_to_bbox(meta, bbox_index, dst_shape):
     
     bbs = bbs.clip_out_of_image()
     meta["gt_bboxes"] = bbs.to_xyxy_array()
+    
+    labels = []
+    for box in bbs:
+        labels.append(box.label)
+    
+    meta['gt_labels'] = labels
+    
     meta["img"] = image
     meta["warp_matrix"] = []
    

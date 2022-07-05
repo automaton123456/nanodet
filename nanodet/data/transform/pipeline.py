@@ -33,6 +33,8 @@ def zoom_to_bbox(meta, bbox_index, dst_shape):
     labels = meta['gt_labels']
     gt_bboxes = meta['gt_bboxes']
     all_bboxes = []
+    image = meta_data["img"]
+    
     
     for bbox in gt_bboxes:
         all_bboxes.append(BoundingBox(x1=bbox[0], y1=bbox[1], x2=bbox[2], y2=bbox[3]))

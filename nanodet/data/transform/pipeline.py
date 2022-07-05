@@ -66,10 +66,8 @@ def zoom_to_bbox(meta, bbox_index, dst_shape):
     #])
     
     #image_aug, bbs_aug = seq(image=image, bounding_boxes=bbs)
-
-    bbs_aug = bbs_aug.clip_out_of_image()
-
-    meta["gt_bboxes"] = bbs_aug.to_xyxy_array()
+    #bbs_aug = bbs_aug.clip_out_of_image()
+    #meta["gt_bboxes"] = bbs_aug.to_xyxy_array()
     meta["img"] = [] #image
     meta["height"] = 320
     meta["width"] = 320
@@ -88,6 +86,8 @@ class LegacyPipeline:
         self.warp = functools.partial(
             warp_and_resize, warp_kwargs=cfg, keep_ratio=keep_ratio
         )
+        
+        
         self.color = functools.partial(color_aug_and_norm, kwargs=cfg)
 
     def __call__(self, meta, dst_shape):
@@ -140,6 +140,8 @@ class Pipeline:
                     meta = self.shape_transform(meta, dst_shape=dst_shape)                 
         else:
             meta = self.shape_transform(meta, dst_shape=dst_shape)
+            
+        print(meta["warp_matrix"])    
        
         meta = self.color(meta=meta)
         return meta

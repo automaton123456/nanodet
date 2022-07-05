@@ -117,7 +117,7 @@ def motion_blur(meta):
     labels = meta['gt_labels']
     gt_bboxes = meta['gt_bboxes']
     print("Motion Blur")
-    print(gt_boxes)
+    print(gt_bboxes)
     
     all_bboxes = []
     image = meta["img"]

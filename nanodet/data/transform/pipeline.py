@@ -94,9 +94,10 @@ def zoom_to_bbox(meta, bbox_index, dst_shape):
     bbs = bbs.clip_out_of_image()
     meta["gt_bboxes"] = bbs.to_xyxy_array()
     
-    labels = []
+    labels = np.array([],dtype=np.int32)
+
     for box in bbs:
-        labels.append(box.label)
+        np.append(labels, box.label)
     
     meta['gt_labels'] = labels
     

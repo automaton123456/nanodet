@@ -65,14 +65,16 @@ def zoom_to_bbox(meta, bbox_index, dst_shape):
     #    imgaug.augmenters.size.CropToFixedSize(width=320, height=320, position="center")
     ])
     
+    #Translate object of interest to center, then scale, then flip, then translate randomly, then crop to center square
     aug1 = iaa.Affine(translate_px={"x": int(-1 * (((x1+x2) / 2)- (width /2) )), "y": int(-1 * (((y1 + y2)/2)-(height / 2)))})
     aug2 = iaa.Affine(scale=(2,5))
     aug3 = iaa.Fliplr(0.5)
     aug4 = iaa.Affine(translate_percent={"x": (-0.1,0.1), "y": (-0.1,0.1)})  
     aug5 = imgaug.augmenters.size.CropToFixedSize(width=320, height=320, position="center")
+    aug6 = imgaug.augmenters.geometric.Rotate([-90,-90,0,0,90,180,270])
     
     bbs = aug1.augment_bounding_boxes(bbs)
-    image = aug2.augment(image=image)
+    image = aug1.augment(image=image)
     
     bbs = aug2.augment_bounding_boxes(bbs)
     image = aug2.augment(image=image)
@@ -86,8 +88,11 @@ def zoom_to_bbox(meta, bbox_index, dst_shape):
     bbs = aug5.augment_bounding_boxes(bbs)
     image = aug5.augment(image=image)
     
+    bbs = aug6.augment_bounding_boxes(bbs)
+    image = aug6.augment(image=image)
+    
     bbs = bbs.clip_out_of_image()
-    meta["gt_bboxes"] = bbs_aug.to_xyxy_array()
+    meta["gt_bboxes"] = bbs.to_xyxy_array()
     meta["img"] = image
     meta["warp_matrix"] = []
    

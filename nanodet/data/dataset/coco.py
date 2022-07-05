@@ -129,10 +129,6 @@ class CocoDataset(BaseDataset):
 
         ann = self.get_img_annotation(idx)
         
-        if "1574026236611_ball" in file_name:
-            print("bbox")
-            print(ann)
-        
         meta = dict(
             img=img, img_info=img_info, gt_bboxes=ann["bboxes"], gt_labels=ann["labels"]
         )

@@ -119,11 +119,11 @@ def motion_blur(meta):
     all_bboxes = []
     image = meta["img"]
     
+    if len(gt_bboxes) == 0:
+        return meta
+    
     for index,bbox in enumerate(gt_bboxes):
         all_bboxes.append(BoundingBox(x1=bbox[0], y1=bbox[1], x2=bbox[2], y2=bbox[3], label=labels[index]))
-        
-    if len(all_bboxes) == 0:
-        return meta
     
     bbs = BoundingBoxesOnImage(all_bboxes, shape=image.shape)
 

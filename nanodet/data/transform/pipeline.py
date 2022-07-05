@@ -135,7 +135,6 @@ class Pipeline:
         self.color = functools.partial(color_aug_and_norm, kwargs=cfg)
 
     def __call__(self, dataset: Dataset, meta: Dict, dst_shape: Tuple[int, int]):
-        print(self.cfg)
         print(dataset)
         print(dataset.mode)
         choice = random.randint(0, 8)

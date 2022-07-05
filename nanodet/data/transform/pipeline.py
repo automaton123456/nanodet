@@ -37,7 +37,6 @@ def zoom_to_bbox(meta, bbox_index, dst_shape):
     all_bboxes = []
     image = meta["img"]
     
-    
     for index,bbox in enumerate(gt_bboxes):
         all_bboxes.append(BoundingBox(x1=bbox[0], y1=bbox[1], x2=bbox[2], y2=bbox[3], label=labels[index]))
         
@@ -52,27 +51,20 @@ def zoom_to_bbox(meta, bbox_index, dst_shape):
     x2 = zoom_bbox[2]
     y2 = zoom_bbox[3]
 
-    #seq = iaa.Sequential([               
-    #    iaa.Affine(
-    #      translate_px={"x": int(-1 * (((x1+x2) / 2)- (width /2) )), "y": int(-1 * (((y1 + y2)/2)-(height / 2)))},
-    #    )
-    #    iaa.Affine(
-    #        scale=(2,5)
-    #    ),
-    #    iaa.Fliplr(0.5),
-    #    iaa.Affine(
-    #      translate_percent={"x": (-0.1,0.1), "y": (-0.1,0.1)},
-    #    ),
-    #    imgaug.augmenters.size.CropToFixedSize(width=320, height=320, position="center")
-    #])
+    tr_x = random.uniform(-0.1,0.1)
+    tr_y = random.uniform(-0.1,0.1)
+
+    scale=random.uniform(2,5)
+
+    rotate = random.choice([-90,-90,0,0,90,180,270])
     
     #Translate object of interest to center, then scale, then flip, then translate randomly, then crop to center square
     aug1 = iaa.Affine(translate_px={"x": int(-1 * (((x1+x2) / 2)- (width /2) )), "y": int(-1 * (((y1 + y2)/2)-(height / 2)))})
-    aug2 = iaa.Affine(scale=(2,5))
+    aug2 = iaa.Affine(scale=scale)
     aug3 = iaa.Fliplr(0.5)
-    aug4 = iaa.Affine(translate_percent={"x": (-0.1,0.1), "y": (-0.1,0.1)})  
+    aug4 = iaa.Affine(translate_percent={"x": tr_x, "y": tr_y})  
     aug5 = imgaug.augmenters.size.CropToFixedSize(width=320, height=320, position="center")
-    aug6 = imgaug.augmenters.geometric.Rotate([-90,-90,0,0,90,180,270])
+    aug6 = imgaug.augmenters.geometric.Rotate(rotate)
     
     bbs = aug1.augment_bounding_boxes(bbs)
     image = aug1.augment(image=image)
@@ -83,8 +75,8 @@ def zoom_to_bbox(meta, bbox_index, dst_shape):
     bbs = aug3.augment_bounding_boxes(bbs)
     image = aug3.augment(image=image)
     
-    bbs = aug4.augment_bounding_boxes(bbs)
     image = aug4.augment(image=image)
+    bbs = aug4.augment_bounding_boxes(bbs)
     
     bbs = aug5.augment_bounding_boxes(bbs)
     image = aug5.augment(image=image)

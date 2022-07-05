@@ -51,10 +51,10 @@ def zoom_to_bbox(meta, bbox_index, dst_shape):
     x2 = zoom_bbox[2]
     y2 = zoom_bbox[3]
 
-    #seq = iaa.Sequential([               
-    #    iaa.Affine(
-    #      translate_px={"x": int(-1 * (((x1+x2) / 2)- (width /2) )), "y": int(-1 * (((y1 + y2)/2)-(height / 2)))},
-    #    ),
+    seq = iaa.Sequential([               
+        iaa.Affine(
+          translate_px={"x": int(-1 * (((x1+x2) / 2)- (width /2) )), "y": int(-1 * (((y1 + y2)/2)-(height / 2)))},
+        )
     #    iaa.Affine(
     #        scale=(2,5)
     #    ),
@@ -63,7 +63,7 @@ def zoom_to_bbox(meta, bbox_index, dst_shape):
     #      translate_percent={"x": (-0.1,0.1), "y": (-0.1,0.1)},
     #    ),
     #    imgaug.augmenters.size.CropToFixedSize(width=320, height=320, position="center")
-    #])
+    ])
     
     aug2 = iaa.Affine(translate_px={"x": int(-1 * (((x1+x2) / 2)- (width /2) )), "y": int(-1 * (((y1 + y2)/2)-(height / 2)))})
     aug3 = iaa.Affine(scale=(2,5))

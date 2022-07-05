@@ -116,6 +116,9 @@ def _normalize(img, mean, std):
 def motion_blur(meta):
     labels = meta['gt_labels']
     gt_bboxes = meta['gt_bboxes']
+    print("Motion Blur")
+    print(gt_boxes)
+    
     all_bboxes = []
     image = meta["img"]
     
@@ -175,12 +178,12 @@ def color_aug_and_norm(meta, kwargs):
         img = aug.augment(image=img)
         
     #Add random motion blur to images, 1 in 10
-    #if random.randint(0, 10) == 0:
+    if random.randint(0, 10) == 0:
         #aug = iaa.MotionBlur(k=[3,32], angle=[-45, 45])
         #img = aug.augment(image=img)
         
-        #meta = motion_blur(meta)  
-        #img = meta["img"]
+        meta = motion_blur(meta)  
+        img = meta["img"]
         
     img = img.astype(np.float32) / 255    
     

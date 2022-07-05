@@ -19,6 +19,7 @@ import imgaug
 import imgaug as ia
 import imgaug.augmenters as iaa
 from imgaug.augmentables.bbs import BoundingBox, BoundingBoxesOnImage
+import numpy as np
 
 from typing import Dict, Tuple
 

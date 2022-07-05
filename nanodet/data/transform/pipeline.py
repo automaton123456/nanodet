@@ -134,7 +134,9 @@ class Pipeline:
         self.shape_transform = ShapeTransform(keep_ratio, **cfg)
         self.color = functools.partial(color_aug_and_norm, kwargs=cfg)
 
-    def __call__(self, dataset: Dataset, meta: Dict, dst_shape: Tuple[int, int]):           
+    def __call__(self, dataset: Dataset, meta: Dict, dst_shape: Tuple[int, int]):
+        print(self.cfg)
+        print(dataset)
         choice = random.randint(0, 8)
         ball_found = -1
         club_found = -1

@@ -51,19 +51,19 @@ def zoom_to_bbox(meta, bbox_index, dst_shape):
     x2 = zoom_bbox[2]
     y2 = zoom_bbox[3]
 
-    seq = iaa.Sequential([               
-        iaa.Affine(
-          translate_px={"x": int(-1 * (((x1+x2) / 2)- (width /2) )), "y": int(-1 * (((y1 + y2)/2)-(height / 2)))},
-        ),
-        iaa.Affine(
-            scale=(2,5)
-        ),
-        iaa.Fliplr(0.5),
-        iaa.Affine(
-          translate_percent={"x": (-0.1,0.1), "y": (-0.1,0.1)},
-        ),
-        imgaug.augmenters.size.CropToFixedSize(width=320, height=320, position="center")
-    ])
+    #seq = iaa.Sequential([               
+    #    iaa.Affine(
+    #      translate_px={"x": int(-1 * (((x1+x2) / 2)- (width /2) )), "y": int(-1 * (((y1 + y2)/2)-(height / 2)))},
+    #    ),
+    #    iaa.Affine(
+    #        scale=(2,5)
+    #    ),
+    #    iaa.Fliplr(0.5),
+    #    iaa.Affine(
+    #      translate_percent={"x": (-0.1,0.1), "y": (-0.1,0.1)},
+    #    ),
+    #    imgaug.augmenters.size.CropToFixedSize(width=320, height=320, position="center")
+    #])
     
     image_aug, bbs_aug = seq(image=image, bounding_boxes=bbs)
 
@@ -115,7 +115,7 @@ class Pipeline:
         ball_found = -1
         club_found = -1
         
-        if 2== 1: #choice == 1:
+        if choice == 1:
             labels = meta['gt_labels']
             
             if random.randint(0, 1):

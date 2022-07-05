@@ -44,7 +44,7 @@ def zoom_to_bbox(meta, bbox_index, dst_shape):
     
     bbs = BoundingBoxesOnImage(all_bboxes, shape=image.shape)
     
-    zoom_bbox = bbox[bbox_index]
+    zoom_bbox = gt_bboxes[bbox_index]
     x1 = zoom_bbox[0]
     y1 = zoom_bbox[1]
     x2 = zoom_bbox[2]

@@ -53,6 +53,6 @@ def build_backbone(cfg):
     elif name == "MobileViT":
         return MobileViTV1(**backbone_cfg)  
     elif name == "EfficientFormer":
-        return efficientformer_l1_feat(**backbone_cfg)  
+        return efficientformer_l1_feat()  
     else:
         raise NotImplementedError

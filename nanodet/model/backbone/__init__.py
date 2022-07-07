@@ -25,6 +25,7 @@ from .efficientnetv2 import EffNetV2
 from .mobilenet_edge_v2 import MobileNetEdgeV2
 from .mobilenet_edge_v2_1280 import MobileNetEdgeV21280
 from .mobilevit import MobileViTV1
+from .efficient_former import efficientformer_l1_feat
 
 def build_backbone(cfg):
     backbone_cfg = copy.deepcopy(cfg)
@@ -51,5 +52,7 @@ def build_backbone(cfg):
         return RepVGG(**backbone_cfg)
     elif name == "MobileViT":
         return MobileViTV1(**backbone_cfg)  
+    elif name == "EfficientFormer":
+        return efficientformer_l1_feat(**backbone_cfg)  
     else:
         raise NotImplementedError

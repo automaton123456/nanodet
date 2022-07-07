@@ -137,32 +137,21 @@ class Pipeline:
     def __call__(self, dataset: Dataset, meta: Dict, dst_shape: Tuple[int, int]):
         if(dataset.mode == 'train'):
             choice = random.randint(0, 8)
-            ball_found = -1
-            club_found = -1
+            labels_to_zoom = [1,2]
+            box_found = []
         
             if choice == 1:
                 labels = meta['gt_labels']
             
-                if random.randint(0, 1):
-                    for i, data in enumerate(labels):
-                        if data == 1:
-                            ball_found = i;
-                            break
+                for i, data in enumerate(labels):
+                    if data in labels_to_zoom:
+                        box_found.append(i)
                         
-                    if ball_found > -1:
-                        meta = zoom_to_bbox(meta, bbox_index=ball_found, dst_shape=dst_shape)
-                    else:
-                        meta = self.shape_transform(meta, dst_shape=dst_shape)
+                if len(box_found) > 0: 
+                    zoom_index = box_found[random.randint(0,len(box_found)-1)]
+                    meta = zoom_to_bbox(meta, bbox_index=zoom_index, dst_shape=dst_shape)
                 else:
-                    for i, data in enumerate(labels):
-                        if data == 2:
-                            club_found = i;
-                            break
-                        
-                    if club_found > -1:        
-                        meta = zoom_to_bbox(meta, bbox_index=club_found, dst_shape=dst_shape)
-                    else:
-                        meta = self.shape_transform(meta, dst_shape=dst_shape)                 
+                    meta = self.shape_transform(meta, dst_shape=dst_shape)                 
             else:
                 meta = self.shape_transform(meta, dst_shape=dst_shape)
    
